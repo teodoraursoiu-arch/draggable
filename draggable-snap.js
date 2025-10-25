@@ -1,5 +1,5 @@
 // CONFIG: Update this to match your draggable element's ID
-const draggableId = 'my-draggable-image'; // existing draggable element ID
+const draggableId = 'draggable-1'; // existing draggable element ID
 const dropZoneId = 'drop-zone';           // ID of the drop zone
 const linkUrl = 'https://www.sugiproject.com';
 
