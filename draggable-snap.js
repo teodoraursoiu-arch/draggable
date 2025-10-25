@@ -1,22 +1,18 @@
-<div
-  id="drop-zone"
-  style="width:160px;height:160px;border:2px dashed #aaa;position:absolute;top:320px;left:100px;text-align:center;line-height:160px;color:#666;transition:all 0.2s ease;">
-  Drop here
-</div>
-
-<script>
-// ===== CONFIG =====
-const draggableId = 'my-draggable-image'; // <-- Replace with your image's ID
+// CONFIG: Update this to match your draggable element's ID
+const draggableId = 'my-draggable-image'; // existing draggable element ID
+const dropZoneId = 'drop-zone';           // ID of the drop zone
 const linkUrl = 'https://www.sugiproject.com';
 
-const dropZone = document.getElementById('drop-zone');
 const draggable = document.getElementById(draggableId);
+const dropZone = document.getElementById(dropZoneId);
 
-if (!draggable) {
-  console.warn(`No element found with ID "${draggableId}"`);
+if (!draggable || !dropZone) {
+  console.warn('Draggable element or drop zone not found.');
 }
 
-// ===== HELPER: check overlap =====
+let snapped = false;
+
+// HELPER: Check if draggable overlaps the drop zone
 function isOverlapping(a, b) {
   const aRect = a.getBoundingClientRect();
   const bRect = b.getBoundingClientRect();
@@ -28,17 +24,12 @@ function isOverlapping(a, b) {
   );
 }
 
-// ===== OBSERVE POSITION =====
-// Use requestAnimationFrame to check position continuously
-let snapped = false;
-
+// POLLING LOOP: Detect when draggable is over the drop zone
 function checkPosition() {
-  if (snapped) return;
-
-  if (draggable && isOverlapping(draggable, dropZone)) {
+  if (!snapped && isOverlapping(draggable, dropZone)) {
     snapped = true;
 
-    // Snap the image into the drop zone
+    // Snap draggable to the center of drop zone
     const zoneRect = dropZone.getBoundingClientRect();
     const imgRect = draggable.getBoundingClientRect();
 
@@ -47,20 +38,17 @@ function checkPosition() {
     draggable.style.top = `${zoneRect.top + window.scrollY + (zoneRect.height - imgRect.height)/2}px`;
     draggable.style.cursor = 'pointer';
 
-    // Make clickable
-    draggable.onclick = () => {
-      window.location.href = linkUrl;
-    };
+    // Make draggable clickable
+    draggable.onclick = () => { window.location.href = linkUrl; };
 
-    // Visual feedback
+    // Optional: visual feedback for drop zone
     dropZone.style.borderColor = '#29e';
     dropZone.style.color = '#29e';
     dropZone.innerText = 'Click the image!';
-  } else {
+  } else if (!snapped) {
     requestAnimationFrame(checkPosition);
   }
 }
 
-// Start checking
+// Start monitoring
 requestAnimationFrame(checkPosition);
-</script>
